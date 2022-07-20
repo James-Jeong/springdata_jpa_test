@@ -78,6 +78,10 @@ public class Member extends BaseEntity {
 7) Save
   - 새로운 엔티티 : persist
   - 기존 엔티티 : merge
+  
+  > merge 는 데이터 업데이트 용도가 아니다.
+  > 엔티티 업데이트는 Dirty Checking (변경 감지)를 사용해야 한다.
+  > 엔티티가 영속성 상태가 아닐 때 다시 영속성 엔티티로 바꿔줄 때 사용한다.
 
 ~~~
 
