@@ -22,6 +22,7 @@ public class Team extends BaseEntity {
     @Column(name = "team_id")
     private Long id;
 
+    @Column(name = "name")
     private String name;
 
     @OneToMany(mappedBy = "team")

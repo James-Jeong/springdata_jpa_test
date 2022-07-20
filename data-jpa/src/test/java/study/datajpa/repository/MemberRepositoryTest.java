@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.member.Member;
 import study.datajpa.entity.member.Team;
 import study.datajpa.entity.member.dto.MemberDto;
+import study.datajpa.entity.member.projections.MemberProjection;
+import study.datajpa.entity.member.projections.MemberUserNameOnly;
+import study.datajpa.entity.member.projections.NestedClosedProjections;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -316,6 +319,69 @@ class MemberRepositoryTest {
 
         // 3) Then
 
+    }
+
+    @Test
+    public void projectionTest() throws Exception {
+        // 1) Given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // 2) When
+        List<MemberUserNameOnly> userNameOnlyList = memberRepository.findProjectionByUserName(member1.getUserName());
+        List<NestedClosedProjections> nestedClosedProjectionsList = memberRepository.findNestedProjectionByUserName(member2.getUserName());
+
+        // 3) Then
+        for (MemberUserNameOnly memberUserNameOnly : userNameOnlyList) {
+            System.out.println("memberUserNameOnly = " + memberUserNameOnly.getUserName());
+        }
+
+        for (NestedClosedProjections nestedClosedProjections : nestedClosedProjectionsList) {
+            System.out.println("nestedClosedProjections.getUserName = " + nestedClosedProjections.getUserName());
+            System.out.println("nestedClosedProjections.getTeam = " + nestedClosedProjections.getTeam());
+            System.out.println("nestedClosedProjections.getTeam.getName = " + nestedClosedProjections.getTeam().getName());
+        }
+    }
+
+    @Test
+    public void nativeQuery() throws Exception {
+        // 1) Given
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("Member1", 10, teamA);
+        Member member2 = new Member("Member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        // 2) When
+        Member byNativeQuery = memberRepository.findByNativeQuery(member1.getUserName());
+        Page<MemberProjection> byNativeProjection = memberRepository.findByNativeProjection(PageRequest.of(1, 10));
+
+        // 3) Then
+        assertNotNull(byNativeQuery);
+        System.out.println("byNativeQuery = " + byNativeQuery);
+
+        assertNotNull(byNativeProjection);
+        for (MemberProjection memberProjection : byNativeProjection) {
+            System.out.println("memberProjection = " + memberProjection.getUserName());
+            System.out.println("memberProjection = " + memberProjection.getTeamName());
+        }
     }
 
 }

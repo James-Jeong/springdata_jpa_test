@@ -1,0 +1,28 @@
+package study.datajpa.repository;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import study.datajpa.entity.item.Item;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+class ItemRepositoryTest {
+
+    @Autowired
+    private ItemRepository itemRepository;
+
+    @Test
+    public void save() throws Exception {
+        // 1) Given
+        Item item = new Item("A");
+        itemRepository.save(item);
+
+        // 2) When
+
+        // 3) Then
+
+    }
+
+}
